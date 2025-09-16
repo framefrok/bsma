@@ -317,11 +317,12 @@ def cmd_top_list(message):
     user_rank = database.get_user_rank(user_id)
     reply = f"👑 **Топ игроков по прибыли (24ч)** 🏆\n━━━━━━━━━━━━━━━━━━━━━━━\n"
     for i, p in enumerate(profits, 1):
-        username = database.get_user(p['user_id'])['username'] if database.get_user(p['user_id']) else f"ID{p['user_id']}"
+        user = database.get_user(p['user_id'])
+        username = user.get('username', f"ID{p['user_id']}") if user else f"ID{p['user_id']}"
         reply += f"{i}. @{username}: {p['net_gold']:,.2f}💰 ({p['tx_count']} сделок)\n"
     reply += f"\n📊 Ваше место: #{user_rank}"
     bot.reply_to(message, reply, parse_mode='Markdown')
-
+    
 @bot.message_handler(func=lambda m: True, content_types=['text'])
 def handle_text(message):
     text = message.text or ""
