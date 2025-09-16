@@ -1,3 +1,4 @@
+
 # alerts.py
 import threading
 import time
@@ -8,7 +9,6 @@ from telebot import types
 import database
 import users
 import market
-import bot  # For @all mentions
 
 logger = logging.getLogger(__name__)
 
