@@ -226,8 +226,8 @@ def calculate_speed(records: List[dict], price_field: str = "buy") -> Optional[f
         return None
     prev = records[-2]
     last = records[-1]
-    price_delta = last[price_field] - first[price_field]
-    time_delta_minutes = (last['timestamp'] - first['timestamp']) / 60.0
+    price_delta = last[price_field] - prev[price_field]
+    time_delta_minutes = (last['timestamp'] - prev['timestamp']) / 60.0
     if time_delta_minutes < 0.1:
         return None
     speed = price_delta / time_delta_minutes
@@ -239,9 +239,9 @@ def get_trend(records: List[dict], price_field: str = "buy") -> str:
         return "stable"
     prev_price = records[-2][price_field]
     last_price = records[-1][price_field]
-    if last_price > first_price:
+    if last_price > prev_price:
         return "up"
-    elif last_price < first_price:
+    elif last_price < prev_price:
         return "down"
     else:
         return "stable"
@@ -253,10 +253,10 @@ def _calculate_speed_from_records(records: List[dict], price_field: str = "buy")
     prev = records[-2]
     last = records[-1]
     try:
-        t_delta = (last['timestamp'] - first['timestamp']) / 60.0
+        t_delta = (last['timestamp'] - prev['timestamp']) / 60.0
         if t_delta <= 0:
             return None
-        price_delta = last[price_field] - first[price_field]
+        price_delta = last[price_field] - prev[price_field]
         speed = price_delta / t_delta
         return float(speed)
     except Exception:
