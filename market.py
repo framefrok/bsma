@@ -149,7 +149,7 @@ def parse_market_message(text: str, sender_id: Optional[int] = None) -> Optional
         except Exception:
             base_sell = sell
 
-        normalized[resources] = {"buy": float(round(base_buy, 6)), "sell": float(round(base_sell, 6)), "quantity": qty}
+        normalized[resource] = {"buy": float(round(base_buy, 6)), "sell": float(round(base_sell, 6)), "quantity": qty}
 
     return normalized
 
