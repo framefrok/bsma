@@ -346,10 +346,10 @@ def handle_transaction(bot, message):
         action = 'buy'
         latest = database.get_latest_market(resource)
         price = total_gold / quantity if quantity > 0 else 0
-        # Profit: for buy, negative cost, but calculate vs sell price? For now, 0, later enhance
-        profit = 0
+        profit = -total_gold  # Расход
         database.insert_transaction(user_id, resource, action, quantity, price, total_gold, profit, timestamp)
-        bot.reply_to(message, f"🛒 **Покупка зафиксирована**\n{resource}: {quantity:,} по {price:.2f}💰 = {total_gold:.2f}💰")
+        profit_str = f" ({profit:+.2f})"
+        bot.reply_to(message, f"🛒 **Покупка зафиксирована**\n{resource}: {quantity:,} по {price:.2f}💰 = {total_gold:.2f}💰{profit_str}")
     elif sell_match:
         qty_str, emoji, total_str = sell_match.groups()
         quantity = int(qty_str.replace(',', ''))
@@ -358,9 +358,10 @@ def handle_transaction(bot, message):
         action = 'sell'
         latest = database.get_latest_market(resource)
         price = total_gold / quantity if quantity > 0 else 0
-        profit = total_gold  # For sell, full as profit
+        profit = total_gold  # Выручка
         database.insert_transaction(user_id, resource, action, quantity, price, total_gold, profit, timestamp)
-        bot.reply_to(message, f"📤 **Продажа зафиксирована**\n{resource}: {quantity:,} по {price:.2f}💰 = {total_gold:.2f}💰 (+{profit:.2f} выгода)")
+        profit_str = f" (+{profit:.2f} выгода)"
+        bot.reply_to(message, f"📤 **Продажа зафиксирована**\n{resource}: {quantity:,} по {price:.2f}💰 = {total_gold:.2f}💰{profit_str}")
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(('menu_', 'hist_', 'balert_', 'clear_alert_')))
 def callback_menu(call):
