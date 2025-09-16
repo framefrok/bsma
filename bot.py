@@ -298,13 +298,13 @@ def cmd_top_player(message):
     total_profit = sum(t['profit'] for t in txs)
     buy_txs = [t for t in txs if t['action'] == 'buy']
     sell_txs = [t for t in txs if t['action'] == 'sell']
-    reply += f"💰 Общая выгода: {total_profit:,.2f}💰\n"
+    reply += f"💰 Чистая выгода: {total_profit:,.2f}💰\n"
     reply += f"🛒 Покупок: {len(buy_txs)} | 📤 Продаж: {len(sell_txs)}\n\n"
     reply += "**Последние сделки:**\n"
     for t in txs[:5]:
         dt = datetime.fromtimestamp(t['timestamp']).strftime("%H:%M")
         action_emoji = "🛒" if t['action'] == 'buy' else "📤"
-        profit_str = f" (+{t['profit']:.2f})" if t['profit'] > 0 else f" ({t['profit']:.2f})"
+        profit_str = f" ({t['profit']:+.2f})"
         reply += f"{action_emoji} {t['resource']}: {t['quantity']:,} по {t['price']:.2f}💰 = {t['total_gold']:.2f}{profit_str} [{dt}]\n"
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("🔄 Обновить", callback_data="refresh_top_player"))
@@ -337,7 +337,7 @@ def handle_transaction(bot, message):
     # Parse "Ты купил 12,143,000🍞 на сумму 6,994,696.57💰"
     buy_match = re.search(r"Ты купил\s+([\d,]+)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]+\.?\d*)\s*💰", text)
     sell_match = re.search(r"Ты продал\s+([\d,]+)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]+\.?\d*)\s*💰", text)
-    
+
     if buy_match:
         qty_str, emoji, total_str = buy_match.groups()
         quantity = int(qty_str.replace(',', ''))
