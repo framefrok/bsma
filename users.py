@@ -50,7 +50,7 @@ def adjust_prices_for_user(user_id: Optional[int], base_buy: float, base_sell: f
     try:
         bonus = get_user_bonus(user_id) if user_id is not None else 0.0
         adj_buy = base_buy / (1 + bonus) if bonus else base_buy
-        adj_sell = base_sell * (1 + bonus) if bonus else base_sell
+        adj_sell = base_sell / (1 + bonus) if bonus else base_sell
         return float(round(adj_buy, 6)), float(round(adj_sell, 6))
     except Exception:
         logger.exception(f"Ошибка при adjust_prices_for_user {user_id}")
