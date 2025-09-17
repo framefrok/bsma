@@ -54,7 +54,13 @@ def schedule_alert(alert_id: int, bot):
         current = database.get_latest_market(alert['resource'])
         if not current:
             try:
-                bot.send_message(alert['user_id'], f"⚠️ Невозможно проверить цель: нет данных по {alert['resource']}.")
+
+                if alert['direction'] == 'up':
+                    dir_text = f"поднялась выше {alert['target_price']:.2f}💰"
+                else:  # down
+                    dir_text = f"опустилась ниже {alert['target_price']:.2f}💰"
+                    bot.send_message(alert['user_id'], f"🔔 **Таймер сработал!** 🎯\n{alert['resource']} {dir_text}\nТекущая: {current_price_adj:.2f}💰")
+                    
             except Exception:
                 pass
             database.update_alert_status(alert_id, 'error')
