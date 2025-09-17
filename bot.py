@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 alerts.start_background_tasks(bot)
 
+#Команда /start
+
 @bot.message_handler(commands=['start'])
 def cmd_start(message):
     user_id = message.from_user.id
@@ -33,9 +35,13 @@ def cmd_start(message):
     markup.add(types.InlineKeyboardButton("⚙️ Настройки", callback_data="menu_settings"))
     bot.reply_to(message, welcome, reply_markup=markup)
 
+#Команда /help
+
 @bot.message_handler(commands=['help'])
 def cmd_help(message):
     alerts.cmd_help_handler(bot, message)
+
+#Команда /stat
 
 @bot.message_handler(commands=['stat'])
 def cmd_stat(message):
@@ -77,6 +83,8 @@ def cmd_stat(message):
     markup.add(types.InlineKeyboardButton("🔄 Обновить", callback_data="refresh_stat"))
     bot.reply_to(message, reply, parse_mode='Markdown', reply_markup=markup)
 
+#Команда /history
+
 @bot.message_handler(commands=['history'])
 def cmd_history(message):
     parts = message.text.split()
@@ -112,13 +120,19 @@ def cmd_history(message):
     reply += trend_str
     bot.reply_to(message, reply, parse_mode='Markdown')
 
+#Команда /status
+
 @bot.message_handler(commands=['status'])
 def cmd_status(message):
     alerts.cmd_status_handler(bot, message)
 
+#Команда /cancel
+
 @bot.message_handler(commands=['cancel'])
 def cmd_cancel(message):
     alerts.cmd_cancel_handler(bot, message)
+
+#Команда /settings
 
 @bot.message_handler(commands=['settings'])
 def cmd_settings(message):
@@ -134,6 +148,8 @@ def cmd_settings(message):
     reply = f"⚙️ **Настройки бонусов** 💎\n• ⚓ Якорь: {'✅ Вкл (+2%)' if anchor else '❌ Выкл'}\n• 📈 Уровень торговли: {trade_level} (+{trade_level*2}%)\n• 💎 Итоговый бонус: **{bonus*100:.0f}%**"
     bot.reply_to(message, reply, parse_mode='Markdown', reply_markup=markup)
 
+
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("settings_"))
 def callback_settings(call):
     user_id = call.from_user.id
@@ -145,7 +161,7 @@ def callback_settings(call):
         bot.answer_callback_query(call.id, f"⚓ Якорь {'включен ✅' if new else 'выключен ❌'} (бонус: {bonus*100:.0f}%)")
         bot.edit_message_text(f"⚙️ Настройки обновлены! Бонус: {bonus*100:.0f}%", call.message.chat.id, call.message.message_id)
     elif call.data == "settings_trade":
-        msg = bot.send_message(call.message.chat.id, "📈 Отправьте новый уровень торговли (число 0-50):")
+        msg = bot.send_message(call.message.chat.id, "📈 Отправьте новый уровень торговли (число 0-10):")
         bot.register_next_step_handler(msg, set_trade_level)
 
 def set_trade_level(message):
@@ -157,7 +173,7 @@ def set_trade_level(message):
         bonus = users.get_user_bonus(message.from_user.id)
         bot.reply_to(message, f"✅ Уровень торговли: {level} (бонус: {bonus*100:.0f}%)")
     except ValueError:
-        bot.reply_to(message, "❌ Неверное число (0-50). Попробуйте снова.")
+        bot.reply_to(message, "❌ Неверное число (0-10). Попробуйте снова.")
 
 @bot.message_handler(commands=['push'])
 def cmd_push(message):
@@ -331,13 +347,15 @@ def handle_text(message):
     elif "Ты купил" in text or "Ты продал" in text:
         handle_transaction(bot, message)
 
+# Парсинг и обработка транзакций
+
 def handle_transaction(bot, message):
     text = message.text or ""
     user_id = message.from_user.id
     timestamp = int(message.date)
-    # Parse "Ты купил 12,143,000🍞 на сумму 6,994,696.57💰"
-    buy_match = re.search(r"Ты купил\s+([\d,]+)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]+\.?\d*)\s*💰", text)
-    sell_match = re.search(r"Ты продал\s+([\d,]+)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]+\.?\d*)\s*💰", text)
+    # Parse 
+    buy_match = re.search(r"Ты купил\s+([\d,]*\d)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
+    sell_match = re.search(r"Ты продал\s+([\d,]*\d)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
 
     if buy_match:
         qty_str, emoji, total_str = buy_match.groups()
