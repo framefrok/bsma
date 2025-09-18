@@ -354,8 +354,10 @@ def handle_transaction(bot, message):
     user_id = message.from_user.id
     timestamp = int(message.date)
     # Parse 
-    buy_match = re.search(r"Ты купил\s+([\d,]*\d)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
-    sell_match = re.search(r"Ты продал\s+([\d,]*\d)([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
+   
+
+    buy_match = re.search(r"Ты купил\s+([\d,]+)\s*([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
+    sell_match = re.search(r"Ты продал\s+([\d,]+)\s*([🪵🪨🍞🐴])\s+на сумму\s+([\d,]*\.?\d+)\s*💰", text, re.DOTALL)
 
     if buy_match:
         qty_str, emoji, total_str = buy_match.groups()
